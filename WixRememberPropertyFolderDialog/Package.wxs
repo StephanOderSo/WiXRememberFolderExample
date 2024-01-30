@@ -1,0 +1,35 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+	 xmlns:ui ="http://wixtoolset.org/schemas/v4/wxs/ui"
+	 >
+	<Package Name="WixRememberPropertyFolderDialog" Manufacturer="TODO Manufacturer" Version="1.2.0.1" UpgradeCode="215cd117-2271-4fab-8a25-8301a792ffb3">
+		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+		<Property Id="PREVIOUSINSTALLFOLDER">
+			<RegistrySearch Id="GetPreviousInstallFolder" Root="HKLM" Key="SOFTWARE\WixTest\RememberProperty" Name="InstallFolder" Type="raw"/>
+		</Property>
+
+		<CustomAction Id="SetINSTALLFOLDER" Property="INSTALLFOLDER" Value="[PREVIOUSINSTALLFOLDER]" Execute="firstSequence"/>
+
+		<InstallExecuteSequence>
+			<Custom Action="SetINSTALLFOLDER" After="AppSearch" Condition="PREVIOUSINSTALLFOLDER"/>
+		</InstallExecuteSequence>
+
+		<InstallUISequence>
+			<Custom Action="SetINSTALLFOLDER" After="AppSearch" Condition="PREVIOUSINSTALLFOLDER"/>
+		</InstallUISequence>
+		
+		<ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER"/>
+
+
+		<Feature Id="Main">
+			<ComponentGroupRef Id="ExampleComponentGroup" />
+		</Feature>
+
+		<ComponentGroup Id="ExampleComponentGroup" Directory="INSTALLFOLDER">
+			<Component Guid="c1c9511f-b77e-4099-8288-540eb7a2f049" Id="ExampleComponent">
+				<RegistryValue Root="HKLM" Key="SOFTWARE\WixTest\RememberProperty" Name="InstallFolder" Value="[INSTALLFOLDER]"/>
+				<File Source="Package.wxs" />
+			</Component>
+		</ComponentGroup>
+	</Package>
+</Wix>
